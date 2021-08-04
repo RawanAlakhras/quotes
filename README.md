@@ -10,3 +10,9 @@ The app should choose one quote each time it is run.
 
 just Clone the repo 
 
+# lab 9
+
+* make a request to an API to get a random quote.
+* the API allows you to show a random quote.
+*  if the app has errors in connecting to the Internet, they instead display a random quote from file.
+* When we grab a random quote from the Internet, we could add it to our file of quotes.

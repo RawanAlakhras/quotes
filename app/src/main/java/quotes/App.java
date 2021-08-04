@@ -5,9 +5,10 @@ package quotes;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class App {
@@ -40,7 +41,42 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException{
-        showingQuote("app/src/main/java/quotes/q.json");
+        System.out.println("random quote from lab 8");
+       showingQuote("app/src/main/java/quotes/q.json");
+        String apiURL="https://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+        try{
+            Gson gson=new Gson();
+            URL url =new URL(apiURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+            int status=connection.getResponseCode();
+            if(status==200){
+                InputStream inputStream = connection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                //read from api and store it in object
+                ApiQuote apiQuote=new Gson().fromJson(bufferedReader,ApiQuote.class);
+                System.out.println("from API");
+                System.out.println(apiQuote);
+
+                //store api quote in file
+                BufferedWriter bw = new BufferedWriter(new FileWriter("app/src/main/java/quotes/fromApi.json" , false));
+                String newQuotes = gson.toJson(apiQuote);
+                bw.write(newQuotes);
+                bw.close();
+
+            }else{
+                System.out.println("An error occurred with status "+status);
+            }
+            connection.disconnect();
+
+
+
+        }catch (Exception e) {
+            System.out.println("from file :");
+            showingQuote("app/src/main/java/quotes/q.json");
+        }
 
     }
 }
